@@ -3,6 +3,8 @@
 
 #include <stdlib.h>
 #include <time.h>
+#include <stdio.h>
+#include <string.h>
 
 typedef enum {
     TIME_OK,

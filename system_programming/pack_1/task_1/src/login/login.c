@@ -6,26 +6,25 @@
 #define INITIAL_CAPACITY 10
 #define MAX_USERNAME_LENGTH 6
 
-
-#define SANCTIONS_FILE "sanctions.dat"
-
-int get_request_limit(const char* username) {
+kLoginState get_request_limit(const char* username, int* limit) {
     FILE* file = fopen(SANCTIONS_FILE, "r");
     if (!file) {
-        return -1;
+        return kINTERNAL_ERROR;
     }
 
     char file_username[7];
-    int limit;
-    while (fscanf(file, "%6s %d", file_username, &limit) == 2) {
+    int lim;
+    while (fscanf(file, "%6s %d", file_username, &lim) == 2) {
         if (strcmp(file_username, username) == 0) {
             fclose(file);
-            return limit;
+            *limit = lim;
+            return kOK;
         }
     }
 
     fclose(file);
-    return -1;
+    *limit = -1;
+    return kOK;
 }
 
 kLoginState login(UserList* user_list, Session* session, const char* username, int pin) {
@@ -36,8 +35,13 @@ kLoginState login(UserList* user_list, Session* session, const char* username, i
                 if (!session->username) {
                     return kBAD_ALLOCATION;
                 }
+                int limit;
+                if (get_request_limit(username, &limit) != kOK) {
+                    free(session->username);
+                    return kINTERNAL_ERROR;
+                }
                 session->logged_in = true;
-                session->remaining_requests = get_request_limit(username);
+                session->remaining_requests = limit;
                 return kOK;
             } else {
                 return kWRONG_PIN;
@@ -56,6 +60,10 @@ kLoginState register_user(UserList* user_list, const char* username, int pin) {
         if (strcmp(user_list->users[i].username, username) == 0) {
             return kUSERNAME_ALREADY_TAKEN;
         }
+    }
+
+    if (pin > 100000 || pin < 0) {
+        return kINVALID_PIN;
     }
 
     if (user_list->user_count >= user_list->capacity) {

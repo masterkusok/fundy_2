@@ -8,8 +8,11 @@ typedef enum {
     kWRONG_PIN,
     kUSERNAME_ALREADY_TAKEN,
     kINTERNAL_ERROR,
-    kBAD_ALLOCATION
+    kBAD_ALLOCATION,
+    kINVALID_PIN,
 } kLoginState;
+
+#define SANCTIONS_FILE "sanctions.dat"
 
 typedef struct {
     char* username;

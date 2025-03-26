@@ -1,7 +1,4 @@
 #include "time_functions.h"
-#include <stdio.h>
-#include <string.h>
-#include <time.h>
 
 TimeState get_current_time(char** time_str) {
     time_t raw_time;
