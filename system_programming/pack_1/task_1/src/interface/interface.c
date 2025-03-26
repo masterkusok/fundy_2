@@ -32,7 +32,7 @@ void start_interface(UserList *users) {
                             printf("User not found!\n");
                             continue;
                         }
-                        printf("You are logged in as %s", session->username);
+                        printf("You are logged in as %s\n", session->username);
                     } else if (command == 'r') {
                         state = register_user(users, username, pin);
                         if (state != kOK) {
@@ -120,7 +120,7 @@ void start_interface(UserList *users) {
             else if (sscanf(line, "Sanctions %6s %d", username, &limit) == 2) {
                 printf("To confirm your action, write \"12345\"");
                 fgets(line, 256, stdin);
-                if (strcmp(line, "12345") < 1) {
+                if (strcmp(line, "12345\n") == 0) {
                     printf("canceling\n");
                     continue;
                 }
