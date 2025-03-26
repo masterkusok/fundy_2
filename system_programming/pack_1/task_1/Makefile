@@ -1,2 +1,2 @@
 task:
-	gcc src/main.c src/time/time.c src/login/login.c src/interface/interface.c src/sanctions/sanctions.c -o main.out
+	gcc src/main.c src/user_vector.c src/load_data.c src/auth.c src/time_functions.c -o main.out
