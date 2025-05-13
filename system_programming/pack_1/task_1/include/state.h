@@ -1,6 +1,8 @@
 #ifndef STATE_H
 #define STATE_H
 
+#include <stdio.h>
+
 typedef enum {
     STATE_OK,
     STATE_BAD_ALLOCATION,
@@ -15,5 +17,7 @@ typedef enum {
     STATE_INVALID_LIMIT,
     STATE_DATE_IN_FUTURE,
 } State;
+
+void log_error(State state);
 
 #endif

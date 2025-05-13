@@ -38,7 +38,6 @@ Flag flag_from_string(const char* s) {
     if (!strcmp(s, CHAR_FLAG_MASK)) {
         return FLAG_MASK;
     }
-
     return FLAG_UNKNOWN;
 }
 
@@ -89,6 +88,7 @@ ParseResult* parse_arguments(int argc, char** argv) {
     result->paths_num = paths_num;
 
     if (result->flag == FLAG_XOR) {
+
         char* flag = argv[argc-1];
         if (strlen(flag) != strlen(CHAR_FLAG_XOR) + 1 || !isdigit(flag[strlen(CHAR_FLAG_XOR)])) {
             result->status = STATUS_INVALID_ARG;
@@ -103,10 +103,17 @@ ParseResult* parse_arguments(int argc, char** argv) {
         result->arg = arg;
         return result;
     }
-
     if (result->flag == FLAG_COPY) {
-        int n;
-        if (sscanf(argv[argc-1], "copy%d", &n) != 1) {
+        const char* flag = argv[argc-1];
+        const char* prefix = "--copy";
+
+        if (strncmp(flag, prefix, strlen(prefix)) != 0) {
+            result->status = STATUS_INVALID_ARG;
+            return result;
+        }
+
+        int n = atoi(flag + strlen(prefix));
+        if (n <= 0) {
             result->status = STATUS_INVALID_ARG;
             return result;
         }

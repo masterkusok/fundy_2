@@ -3,6 +3,7 @@
 #include "../include/load_data.h"
 #include "../include/auth.h"
 #include "../include/time_functions.h"
+#include "../include/state.h"
 
 State run_interface(Session* session, UserList* list) {
     State state;
@@ -50,10 +51,9 @@ State run_interface(Session* session, UserList* list) {
                 state = login(session, list, username, pin);
                 if (state == STATE_OK) {
                     printf("Successfully logged in as %s\n", username);
-                } else if (state == STATE_USER_NOT_FOUND) {
-                    printf("User with such credentials was not found\n");
                 } else {
                     printf("Login failed\n");
+                    log_error(state);
                 }
                 continue;
             }
@@ -64,6 +64,7 @@ State run_interface(Session* session, UserList* list) {
                     printf("Registered successfully! Now login!\n");
                 } else {
                     printf("Registration failed\n");
+                    log_error(state);
                 }
                 continue;
             }
@@ -101,6 +102,7 @@ State run_interface(Session* session, UserList* list) {
                 char* time;
                 state = get_current_time(&time);
                 if (state != STATE_OK) {
+                    log_error(state);
                     continue;
                 }
                 printf("Current time: %s\n", time);
@@ -115,6 +117,7 @@ State run_interface(Session* session, UserList* list) {
                 char* date;
                 state = get_current_date(&date);
                 if (state != STATE_OK) {
+                    log_error(state);
                     continue;
                 }
                 printf("Current date: %s\n", date);
@@ -132,7 +135,7 @@ State run_interface(Session* session, UserList* list) {
                 long difference;
                 state = calculate_time_difference(date, flag, &difference);
                 if (state != STATE_OK) {
-                    printf("Error while getting time difference\n");
+                    log_error(state);
                     continue;
                 }
                 printf("%ld\n", difference);
@@ -176,6 +179,7 @@ State run_interface(Session* session, UserList* list) {
                 state = set_limit(list, username, limit);
                 if (state != STATE_OK) {
                     printf("Error while setting limit\n");
+                    log_error(state);
                     continue;
                 }
                 printf("Limit set successfully!\n");
@@ -202,7 +206,7 @@ int main(int argc, char** argv) {
 
     State state = load_data(list, "users.dat");
     if (state != STATE_OK) {
-        fprintf(stderr, "Warning: Failed to load user data (%d)\n", state);
+        log_error(state);
     }
 
     Session* session = new_session();
